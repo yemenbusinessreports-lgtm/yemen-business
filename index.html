@@ -23,6 +23,8 @@ iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#f3f5f7
 <script>
 var EXEC = 'https://script.google.com/macros/s/AKfycbygciCe6rU_p7yfTFGyB1gPqRp211IblgRBiRfOncDjYhfmC7XXyeCTcKWkv-COfNom/exec';
 var f = document.getElementById('f'), K = 'yemen_top', ok = false;
+// رابط أول دخول من رسالة الواتساب: #n=الاسم&c=الرمز المؤقت (بعد # لا يصل لأي خادم) ⇒ يُمسح من الشريط فوراً ويُرسل للبوابة حين تجهز
+var FILL = null; (function () { var h = new URLSearchParams(location.hash.slice(1)); if (h.get('n') && h.get('c')) { FILL = { yemen: 'fill', n: h.get('n'), c: h.get('c') }; history.replaceState(null, '', location.pathname + location.search); } })();
 var top_ = function () { try { localStorage.setItem(K, '1'); } catch (e) {} location.replace(EXEC + '?app'); };
 // الإطار أولاً؛ إن لم تُبلغ البوابة «جاهزة» خلال 15 ثانية (متصفح يمنع إطارات Google) ⇒ فتح /exec مباشرة، ويُتذكّر ذلك للمرات القادمة
 var saidTop = false; try { saidTop = localStorage.getItem(K) === '1'; } catch (e) {}
@@ -32,7 +34,7 @@ else { f.src = EXEC + '?app&w=1'; setTimeout(function () { if (!ok && navigator.
 window.addEventListener('message', function (e) {
   var d = e.data;
   if (!d || !/\.googleusercontent\.com$|^https:\/\/script\.google\.com$/.test(e.origin)) return;
-  if (d.yemen === 'ready') { ok = true; return; }
+  if (d.yemen === 'ready') { ok = true; if (FILL && e.source) { e.source.postMessage(FILL, '*'); FILL = null; } return; }
   if (d.yemen !== 'go' || typeof d.url !== 'string') return;
   if (d.url.indexOf(EXEC + '?') === 0) f.src = d.url;
   else if (d.ext && /^https:\/\//.test(d.url)) location.href = d.url;

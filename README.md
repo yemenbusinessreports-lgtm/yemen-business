@@ -4,7 +4,9 @@
 الملفات: `index.html` (الغلاف)، `manifest.json`، `sw.js` (عامل خدمة يحفظ الغلاف فقط)، `icon-192.png`، `icon-512.png`.
 هذا المجلد لا يُرفع إلى Apps Script (`.claspignore` قائمة سماح لملفات الجذر فقط).
 
-## خطوات الرفع إلى GitHub Pages (بعد موافقة المالك — نشر خارجي)
+**منشور (08-11):** https://yemenbusinessreports-lgtm.github.io/yemen-business/ — المستودع `yemenbusinessreports-lgtm/yemen-business` (Pages: main / root).
+
+## خطوات الرفع إلى GitHub Pages (أول مرة — تمّت)
 1. مستودع جديد على GitHub (مثلاً `yemen-app`). Pages المجاني يحتاج مستودعاً **عاماً**؛ الملفات لا تحوي أسراراً (رابط /exec فقط، وهو رابط الموظفين أصلاً).
 2. ارفع محتوى `app/` إلى جذر المستودع (فرع `main`):
    ```bash

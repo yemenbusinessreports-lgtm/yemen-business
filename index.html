@@ -11,12 +11,14 @@
 <style>
 html,body{margin:0;height:100%;background:#0f3d47;overflow:hidden}
 iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#f3f5f7}
+#inst{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2;padding:12px 22px;border:0;border-radius:999px;background:#c9a86a;color:#0f3d47;font:700 17px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
 #off{display:none;position:fixed;inset:0;align-items:center;justify-content:center;color:#fff;font:18px system-ui,sans-serif;text-align:center;padding:24px}
 </style>
 </head>
 <body>
 <!-- غلاف تطبيق «يمن بزنس»: يفتح بوابة الدخول الواحدة (/exec?app&w=1) داخل إطار بملء الشاشة. البوابة ترسل «جاهزة» ثم رابط الصفحة المختارة فيُفتح في الإطار نفسه؛ وإن لم تصل «جاهزة» يفتح /exec مباشرة -->
 <iframe id="f" title="يمن بزنس" allow="clipboard-write"></iframe>
+<button id="inst" type="button" hidden>📲 تثبيت يمن بزنس</button>
 <div id="off">لا يوجد اتصال بالإنترنت — أعد المحاولة</div>
 <script>
 var EXEC = 'https://script.google.com/macros/s/AKfycbygciCe6rU_p7yfTFGyB1gPqRp211IblgRBiRfOncDjYhfmC7XXyeCTcKWkv-COfNom/exec';
@@ -37,6 +39,11 @@ window.addEventListener('message', function (e) {
 });
 function net() { document.getElementById('off').style.display = navigator.onLine ? 'none' : 'flex'; }
 addEventListener('online', function () { net(); f.src = f.src; }); addEventListener('offline', net); net();
+// زر «تثبيت» بضغطة واحدة (Chrome أندرويد) — يختفي بعد التثبيت أو داخل التطبيق المثبّت
+var ip = null, inst = document.getElementById('inst');
+addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); ip = e; inst.hidden = false; });
+inst.onclick = function () { if (!ip) return; ip.prompt(); ip.userChoice.then(function () { ip = null; inst.hidden = true; }); };
+addEventListener('appinstalled', function () { inst.hidden = true; });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>

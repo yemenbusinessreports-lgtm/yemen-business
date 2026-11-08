@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f3d47">
+<title>يمن بزنس</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+html,body{margin:0;height:100%;background:#0f3d47;overflow:hidden}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#f3f5f7}
+#off{display:none;position:fixed;inset:0;align-items:center;justify-content:center;color:#fff;font:18px system-ui,sans-serif;text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<!-- غلاف تطبيق «يمن بزنس»: يفتح بوابة الدخول الواحدة (/exec?app&w=1) داخل إطار بملء الشاشة. البوابة ترسل «جاهزة» ثم رابط الصفحة المختارة فيُفتح في الإطار نفسه؛ وإن لم تصل «جاهزة» يفتح /exec مباشرة -->
+<iframe id="f" title="يمن بزنس" allow="clipboard-write"></iframe>
+<div id="off">لا يوجد اتصال بالإنترنت — أعد المحاولة</div>
+<script>
+var EXEC = 'https://script.google.com/macros/s/AKfycbygciCe6rU_p7yfTFGyB1gPqRp211IblgRBiRfOncDjYhfmC7XXyeCTcKWkv-COfNom/exec';
+var f = document.getElementById('f'), K = 'yemen_top', ok = false;
+var top_ = function () { try { localStorage.setItem(K, '1'); } catch (e) {} location.replace(EXEC + '?app'); };
+// الإطار أولاً؛ إن لم تُبلغ البوابة «جاهزة» خلال 15 ثانية (متصفح يمنع إطارات Google) ⇒ فتح /exec مباشرة، ويُتذكّر ذلك للمرات القادمة
+var saidTop = false; try { saidTop = localStorage.getItem(K) === '1'; } catch (e) {}
+if (saidTop) location.replace(EXEC + '?app');
+else { f.src = EXEC + '?app&w=1'; setTimeout(function () { if (!ok && navigator.onLine) top_(); }, 15000); }
+// رسالة البوابة { yemen:'go', url, ext }: صفحات النظام في الإطار؛ البرامج الأخرى في النافذة نفسها
+window.addEventListener('message', function (e) {
+  var d = e.data;
+  if (!d || !/\.googleusercontent\.com$|^https:\/\/script\.google\.com$/.test(e.origin)) return;
+  if (d.yemen === 'ready') { ok = true; return; }
+  if (d.yemen !== 'go' || typeof d.url !== 'string') return;
+  if (d.url.indexOf(EXEC + '?') === 0) f.src = d.url;
+  else if (d.ext && /^https:\/\//.test(d.url)) location.href = d.url;
+});
+function net() { document.getElementById('off').style.display = navigator.onLine ? 'none' : 'flex'; }
+addEventListener('online', function () { net(); f.src = f.src; }); addEventListener('offline', net); net();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
